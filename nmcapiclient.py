@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 #apiUrl = "http://localhost:8080/beta1"
-apiUrl = "http://api.namecoin.info/beta1"
+apiUrl = "https://api.namecoin.info/beta1"
 useHashfuscate = True
 timeout = 3  # seconds
 
+import ssl
 import urllib2
 import hashfuscate
 import json
@@ -14,7 +15,18 @@ import traceback
 class NmcApiError(Exception):
     pass
 
-opener = urllib2.build_opener(urllib2.HTTPHandler(debuglevel=0))
+if not apiUrl.startswith("http://"):
+    try:
+        sslContext = ssl.create_default_context()
+    except AttributeError:
+            raise NmcApiError("httpS:// connection not available. " +
+                              "Upgrade to a newer Python version "+
+                              "or change API URL to plain http://")
+    opener = urllib2.build_opener(urllib2.HTTPHandler(),
+                              urllib2.HTTPSHandler(context=sslContext))
+else:
+    opener = urllib2.build_opener(urllib2.HTTPHandler())
+
 opener.addheaders = [('User-agent', 'nmcapiclient 100 ' + str(os.name))]
 
 def get_name(name, processed=True):
@@ -34,7 +46,7 @@ def get_name(name, processed=True):
         try:
             f.close()
         except:
-            pass        
+            pass
         if useHashfuscate:
             data, h = hashfuscate.decode(data, returnHash=True)
         jData = json.loads(data)
