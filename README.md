@@ -26,9 +26,9 @@ waitless (optional, to improve performance):
 How to use
 =========
 Start a local server:
-    python ./nmcapi.py -debug -port=8080
+    python ./api.py -debug -port=8080
 Start a public server:
-    python ./nmcapi.py -public
+    python ./api.py -public
 
 See nmcapiclient.py on how to do lookups. Currently the server can be used with nmcontrol-hyperion and hopefully soon with official nmcontrol.
 
