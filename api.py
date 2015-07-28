@@ -18,7 +18,7 @@ suffixJson = ".json"
 serverDatadir = "/home/namecoin/.namecoin"
 defaultPort = 8080  # can be set via command line: -port=
 timeout = 0.1  # seconds
-debug = True
+debug = False
 ###############
 
 ### Globals ###
@@ -35,15 +35,15 @@ rpcOptions = namerpc.CoinRpc(connectionType="client",
 class MyNameProcess(nameprocess.NameProcess):
     def __init__(self, debug):
         nameprocess.NameProcess.__init__(self, debug=debug)
-        
+
         # instantiate session rpc (relatively fast)
         self.rpc = namerpc.CoinRpc(connectionType="client", options=rpcOptions,
                                    timeout=timeout)
-        
+
     def get_name_show(self, key):
         data = self.rpc.nm_show(key)
         if self.debug:
-            print "get_name_show:data:", type(data), data        
+            print "get_name_show:data:", type(data), data
         return data
 
 ##def _name(key, processed):
@@ -83,7 +83,7 @@ def _xname(x, processed):
             data = mnp.get_name_processed(key)
         else:
             data = mnp.get_name_show(key)
-        s = json.dumps(data, separators=(',', ':'))        
+        s = json.dumps(data, separators=(',', ':'))
         return hashfuscate.encode(s)
     except namerpc.NameDoesNotExistError:
         return {"ERROR" : "Name does not seem to exist."}
@@ -111,15 +111,17 @@ for arg in sys.argv:
         break
 if port == None:
     port = defaultPort
-    
+
 if "-waitress" in sys.argv:
     useWaitress = True
 
 if "-public" in sys.argv:
-    if debug:
-        raise Exception("Both public and debug flags set.")
     public = True
 
+if "-debug" in sys.argv:
+    debug = True
+
+print "debug:", debug
 print "public:", public
 print "port:", port
 print "waitress:", useWaitress
@@ -136,11 +138,11 @@ if 1:
         bottleApp = default_app()
         from waitress import serve
         serve(bottleApp, host=host, port=port)
-    else:        
+    else:
         run(host=host, port=port)
 
 else:
-    standalone = True
+    # testing
     print "hashfuscate 'd/nx':", hashfuscate.encode("d/nx")
     print "xname d/nx:\n", xname(hashfuscate.encode("d/nx"))
     print "xname d/nameid:\n", xname(hashfuscate.encode("d/nameid"))
