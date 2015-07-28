@@ -18,16 +18,15 @@ suffixJson = ".json"
 serverDatadir = "/home/namecoin/.namecoin"
 defaultPort = 8080  # can be set via command line: -port=
 timeout = 0.1  # seconds
-debug = False
 ###############
 
 ### Globals ###
-public = None  # can be set via command line
+debug = False
+public = False  # can be set via command line
+useWaitress = False
 port = None
 datadir = None if os.name == "nt" else serverDatadir
-standalone = None
 lenSuffixJson = len(suffixJson)
-useWaitress = None
 rpcOptions = namerpc.CoinRpc(connectionType="client",
                              datadir=datadir).options  # cache looked up rpc options
 ###############
